@@ -21,6 +21,7 @@ public class TopDownMovment : MonoBehaviour
     public float speed = 10f;
     void Start()
     {
+        
         mainPlayer = GetComponentInParent<Transform>();
         _input = GetComponent<InputHandler>();
         rb = GetComponentInParent<Rigidbody>();
@@ -56,13 +57,20 @@ public class TopDownMovment : MonoBehaviour
              // ... set the players rotation and set the speed parameter to 5.3f.
              Rotating(horizontal, vertical);
              rb.AddForce(transform.forward * speed);
+             
+             
          }
 
              // Otherwise set the speed parameter to 0.
              
-              
+        
+        
+        
      
     }
+    
+
+   
     
     void Rotating (float horizontal, float vertical)
      {
