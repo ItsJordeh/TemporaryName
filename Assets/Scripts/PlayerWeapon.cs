@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerWeapon : MonoBehaviour
 {
     private InputHandler _input;
+    
     // Start is called before the first frame update
     void Start()
     {
