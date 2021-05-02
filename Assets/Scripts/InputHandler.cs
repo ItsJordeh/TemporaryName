@@ -10,8 +10,8 @@ public class InputHandler : MonoBehaviour
 
     public Vector2 MousePosition{get; private set;}
 
-    public bool LeftArrow;
-    public bool RightArrow;
+    public bool LeftRotation;
+    public bool RightRotation;
     public bool UpArrow;
     public bool DownArrow;
 
@@ -29,8 +29,8 @@ public class InputHandler : MonoBehaviour
         var h = Input.GetAxis("Horizontal");
         var v = Input.GetAxis("Vertical");
         InputVector = new Vector2(h, v);
-        if(Input.GetKey(KeyCode.LeftArrow)) LeftArrow = true; else LeftArrow = false;
-        if(Input.GetKey(KeyCode.RightArrow)) RightArrow = true; else RightArrow = false;
+        if(Input.GetKey(KeyCode.Q)) LeftRotation = true; else LeftRotation = false;
+        if(Input.GetKey(KeyCode.E)) RightRotation = true; else RightRotation = false;
         if(Input.GetKey(KeyCode.UpArrow)) UpArrow = true; else UpArrow = false;
         if(Input.GetKey(KeyCode.DownArrow)) DownArrow = true; else DownArrow = false;
 

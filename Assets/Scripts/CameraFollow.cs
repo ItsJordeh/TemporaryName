@@ -39,12 +39,12 @@ public class CameraFollow : MonoBehaviour
     void Update()
     {
         // desiredPosition = (transform.position - center.position).normalized * radius + center.position;
-        if(_input.LeftArrow)
+        if(_input.LeftRotation)
         {
             
             transform.RotateAround(center.position, -axis, rotationSpeed * Time.deltaTime);
         }
-        if(_input.RightArrow)
+        if(_input.RightRotation)
         {
             transform.RotateAround(center.position, axis, rotationSpeed * Time.deltaTime);
         }
