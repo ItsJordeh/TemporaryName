@@ -671,8 +671,8 @@ MonoBehaviour:
   rotationSpeed: 80
   zoomSens: 15
   zoomSpeed: 5
-  zoomMin: 3
-  zoomMax: 20
+  zoomMin: 2
+  zoomMax: 10
 --- !u!1 &1034216101
 GameObject:
   m_ObjectHideFlags: 0
