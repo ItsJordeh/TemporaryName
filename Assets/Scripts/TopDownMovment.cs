@@ -6,6 +6,9 @@ public class TopDownMovment : MonoBehaviour
 {
     // Start is called before the first frame update
     private InputHandler _input;
+    public GameObject weapon;
+
+    private Animator swordAnimator;
     public Vector3 mouseWorldPosition;
      public float turnSmoothing = 15f; // A smoothing value for turning the player.
      public float speedDampTime = 0.1f; // The damping for the speed parameter
@@ -23,7 +26,11 @@ public class TopDownMovment : MonoBehaviour
     public float speed = 10f;
     void Start()
     {
-        
+        swordAnimator = weapon.GetComponent<Animator>();
+        swordAnimator.SetFloat("equipSpeed", equipTime);
+        swordAnimator.SetFloat("dequipSpeed", dequipTime);
+
+
         mainPlayer = GetComponentInParent<Transform>();
         _input = GetComponent<InputHandler>();
         rb = GetComponentInParent<Rigidbody>();
@@ -43,36 +50,44 @@ public class TopDownMovment : MonoBehaviour
     void FixedUpdate()
     {
         ProcessMovement(_input.InputVector.x, _input.InputVector.y);
+        ProcessInput();
+        ProcessCooldowns();
     }
     private Vector3 newDir;
     private Vector3 direction;
     private Quaternion rot;
     private void ProcessMovement(float horizontal, float vertical)
     {
-        // Vector3 targetDirection = new Vector3(_input.InputVector.x, 0f, _input.InputVector.y);
-        // targetDirection = Camera.main.transform.TransformDirection(targetDirection);
-        // targetDirection.y = 0.0f;
-        // 
 
-        // 
-
-        if(horizontal != 0f || vertical != 0f && !isEquipped)
+        if((horizontal != 0f || vertical != 0f) && !isEquipped)
          {
-             // ... set the players rotation and set the speed parameter to 5.3f.
              Rotating(horizontal, vertical);
              rb.AddForce(transform.forward * speed);
+             Debug.Log("Unequipped rotation");
          }
-         else if (isEquipped)
+         if(isEquipped)
          {
-            //  Vector2 positionOnScreen = Camera.main.WorldToViewportPoint(transform.position);
+             RotateTowardCursor(horizontal, vertical);
 
-            //  Vector2 mouseOnScreen =(Vector2)Camera.main.ScreenToViewportPoint(Input.mousePosition);
-
-            // 
-
-            // 
-
-            Plane plane = new Plane(Vector3.up, transform.position.y);
+            if(horizontal!= 0f || vertical!=0f)
+            {
+                Vector3 targetDirection = new Vector3(horizontal, 0, vertical);
+                targetDirection = Camera.main.transform.TransformDirection(targetDirection);
+                
+                targetDirection.y = 0.0f;
+                rb.AddForce(targetDirection*speed);
+            }
+             
+         }
+             
+        
+        
+        
+     
+    }
+    void RotateTowardCursor(float horizontal, float vertical)
+    {
+        Plane plane = new Plane(Vector3.up, transform.position.y);
 
             float distance;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -81,33 +96,87 @@ public class TopDownMovment : MonoBehaviour
                 mouseWorldPosition = ray.GetPoint(distance);
                 mouseWorldPosition = new Vector3(mouseWorldPosition.x, transform.position.y, mouseWorldPosition.z);
             }
-            direction = new Vector3(mouseWorldPosition.x, 0f, mouseWorldPosition.z);
+            direction = new Vector3(mouseWorldPosition.x, transform.position.y, mouseWorldPosition.z) - transform.position;
             
-            rot = Quaternion.LookRotation(transform.InverseTransformPoint(direction));
+            rot = Quaternion.LookRotation(direction);
             
             transform.rotation = rot;
 
-            //  float angle = AngleBetweenTwoPoints(transform.position, mouseWorldPosition);
-
-            //   transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
-         }
-
-             // Otherwise set the speed parameter to 0.
-             
-        
-        
-        
-     
+            if(horizontal != 0f && vertical != 0f)
+            {
+                Vector3 targetDirection = new Vector3(horizontal, 0f, vertical);
+                targetDirection = Camera.main.transform.TransformDirection(targetDirection);
+                targetDirection.y = 0.0f;
+            }
     }
+    
+    
+    void ProcessInput()
+    {
+        if(_input.RKey)
+        {
+            Equip();
+        }
+    }
+    
+    public float equipTime = 2f;
+    private float equipStart;
+    private bool equipping;
+
+    public float dequipTime = 1f;
+    private float dequipStart;
+    private bool dequipping;
+    
+    void ProcessCooldowns()
+    {
+        if(equipping || dequipping)
+        {
+            if(Time.time > equipStart + equipTime && !isEquipped && equipping)
+            {
+                swordAnimator.SetBool("equipping", false);
+                equipping = false;
+                isEquipped = true;
+                Debug.Log("Equipped");
+            }    
+            if(Time.time > dequipStart + dequipTime && isEquipped && dequipping)
+            {
+                swordAnimator.SetBool("dequipping", false);
+                dequipping = false;
+                isEquipped = false;
+                Debug.Log("Dequipped");
+            }
+        }
+        
+    }
+    void Equip()
+    {
+        if(!equipping || !dequipping)
+        {
+            if(isEquipped && !dequipping)
+            {
+                swordAnimator.SetBool("dequipping", true);
+                dequipping = true;
+                dequipStart = Time.time;
+            }
+            else if(!isEquipped && !equipping)
+            {
+                swordAnimator.SetBool("equipping", true);
+                equipping = true;
+                equipStart = Time.time;
+            }
+        }
+        
+    }
+    
     
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(mouseWorldPosition, 1);
         Gizmos.DrawSphere(direction, 1);
-        Gizmos.DrawSphere(newDir, 1);
+        //Gizmos.DrawSphere(newDir, 1);
         Gizmos.DrawLine(transform.position, mouseWorldPosition);
-        Debug.Log(Vector3.Angle(transform.position, mouseWorldPosition));
+        
         
     }
     float AngleBetweenTwoPoints(Vector3 a, Vector3 b) 

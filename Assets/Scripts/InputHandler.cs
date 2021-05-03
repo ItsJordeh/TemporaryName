@@ -14,6 +14,7 @@ public class InputHandler : MonoBehaviour
     public bool RightRotation;
     public bool UpArrow;
     public bool DownArrow;
+    public bool RKey;
 
     public float ScrollWheel;
 
@@ -33,6 +34,7 @@ public class InputHandler : MonoBehaviour
         if(Input.GetKey(KeyCode.E)) RightRotation = true; else RightRotation = false;
         if(Input.GetKey(KeyCode.UpArrow)) UpArrow = true; else UpArrow = false;
         if(Input.GetKey(KeyCode.DownArrow)) DownArrow = true; else DownArrow = false;
+        if(Input.GetKey(KeyCode.R)) RKey = true; else RKey = false;
 
         ScrollWheel = Input.GetAxis("Mouse ScrollWheel") * sensitivity;
         
