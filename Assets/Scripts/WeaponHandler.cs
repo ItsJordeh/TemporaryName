@@ -32,13 +32,20 @@ public class WeaponHandler : MonoBehaviour
     }
 
     private int currentInCombo = 0;
+    private bool blocking, pushing;
     private float mousecd = 0.1f;
     void CaptureCombo()
     {
         if(player.isEquipped)
         {
             
-            if(_input.LMB && (Time.time > lastComboTime + mousecd || lastComboTime ==0) && comboCount < maxCombo)
+
+            if(_input.LMB && blocking)
+            {
+                pushing = true;
+                animator.SetBool("pushing", true);
+            }
+            if(_input.LMB && (Time.time > lastComboTime + mousecd || lastComboTime ==0) && comboCount < maxCombo && !blocking)
             {
                 Debug.Log("AAddToCombo");
                 
@@ -48,8 +55,24 @@ public class WeaponHandler : MonoBehaviour
                     animator.SetInteger(animString, attackType);
                 lastComboTime = Time.time;
                 comboCount++;
-            } 
-            else if(_input.RMB && Time.time < lastComboTime + comboCooldown && comboCount < maxCombo)
+            }
+            else if(_input.RMB && comboCount == 0)
+            {
+                if(!blocking)
+                {
+                    blocking = true;
+                    animator.SetBool("blocking", true);
+                    ResetCooldowns();
+                }
+                
+            }
+            else if (!_input.RMB && blocking)
+            {
+                animator.SetBool("blocking", false);
+                blocking = false;
+            }
+
+            else if(_input.RMB && Time.time < lastComboTime + comboCooldown && comboCount < maxCombo && comboCount!= 0 && !blocking)
             {
                 currentInCombo++;
                     int attackType = 2;
@@ -57,11 +80,12 @@ public class WeaponHandler : MonoBehaviour
                     animator.SetInteger(animString, attackType);
                 lastComboTime = Time.time;
                 comboCount++;
-            } 
+            }
+            
+             
             
             
             
-            Debug.Log("Printing");
             
             
             
@@ -72,6 +96,7 @@ public class WeaponHandler : MonoBehaviour
     {
         animator.SetInteger("combo1", 0);
         animator.SetInteger("combo2", 0);
+        animator.SetBool("pushing", false);
         comboCount = 0;
         currentInCombo = 0;
     }
