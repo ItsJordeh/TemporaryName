@@ -65,7 +65,7 @@ public class TopDownMovment : MonoBehaviour
              rb.AddForce(transform.forward * speed);
              Debug.Log("Unequipped rotation");
          }
-         if(isEquipped)
+         if(isEquipped || equipping)
          {
              RotateTowardCursor(horizontal, vertical);
 
@@ -99,14 +99,19 @@ public class TopDownMovment : MonoBehaviour
             direction = new Vector3(mouseWorldPosition.x, transform.position.y, mouseWorldPosition.z) - transform.position;
             
             rot = Quaternion.LookRotation(direction);
+            Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+         
+            // Create a rotation that is an increment closer to the target rotation from the player's rotation.
+            Quaternion newRotation = Quaternion.Lerp(transform.rotation, targetRotation, turnSmoothing * Time.deltaTime);
             
-            transform.rotation = rot;
+            transform.rotation = newRotation;
 
             if(horizontal != 0f && vertical != 0f)
             {
                 Vector3 targetDirection = new Vector3(horizontal, 0f, vertical);
                 targetDirection = Camera.main.transform.TransformDirection(targetDirection);
                 targetDirection.y = 0.0f;
+                
             }
     }
     
