@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.UI;
+using TMPro;
 public class OptionsMenu : MonoBehaviour{
     Resolution[] resolutions;
 
-    public Dropdown resolutionsDropdown;
+    public TMP_Dropdown resolutionsDropdown;
 
     //on start of game, clear any data in resolution dropdown and replace with resolution options that are available.
     void Start () {
