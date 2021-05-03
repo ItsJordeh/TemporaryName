@@ -1,0 +1,23 @@
+Cartoony Style
+Strategic fighting
+4 Player Co-op
+Inventory System
+Top down Camera with orbit
+
+Players are shapeshifters
+Must take form of someone at all times
+Take control of a roster of characters with different abilities
+
+
+Aim in direction of mouse when weapon equipped
+Walk slightly slower when weapon equipped?
+
+Example Combos: (Can be different per weapon)
+LMB 		- Slash/Punch
+RMB 		- Block
+LMB + RMB 	- Slash + Offhand punch(or kick)
+RMB + LMB	- Block + Parry(if timed)
+LMB + LMB	- Slash+Slash(or stab?)
+ 
+
+
