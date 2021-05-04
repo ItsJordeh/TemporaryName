@@ -8,13 +8,17 @@ public class TopDownMovment : MonoBehaviour
     private InputHandler _input;
     public GameObject weapon;
 
+    public float eqippedMoveSpeed = 10f, dequippedMoveSpeed = 30f;
+
     private Animator swordAnimator;
     public Vector3 mouseWorldPosition;
      public float turnSmoothing = 15f; // A smoothing value for turning the player.
      public float speedDampTime = 0.1f; // The damping for the speed parameter
 
+    public float maxSpeed = 30f;
     
     private Vector3 movement;
+    public float dashImpulse;
 
     private Rigidbody rb;
 
@@ -23,7 +27,7 @@ public class TopDownMovment : MonoBehaviour
    
     Vector3 x, z;
 
-    public float speed = 10f;
+    private float speed = 10f;
     void Start()
     {
         swordAnimator = weapon.GetComponent<Animator>();
@@ -52,30 +56,50 @@ public class TopDownMovment : MonoBehaviour
         ProcessMovement(_input.InputVector.x, _input.InputVector.y);
         ProcessInput();
         ProcessCooldowns();
+        LimitMovement();
+    }
+    void LimitMovement()
+    {
+         if(rb.velocity.magnitude > maxSpeed)
+         {
+                rb.velocity = rb.velocity.normalized * maxSpeed;
+         }
     }
     private Vector3 newDir;
     private Vector3 direction;
     private Quaternion rot;
     private void ProcessMovement(float horizontal, float vertical)
     {
+        if(isEquipped || equipping || dequipping)   speed = eqippedMoveSpeed;
+        else if(!isEquipped)    speed = dequippedMoveSpeed;
+
+        
+        
 
         if((horizontal != 0f || vertical != 0f) && !isEquipped)
          {
              Rotating(horizontal, vertical);
              rb.AddForce(transform.forward * speed);
-             Debug.Log("Unequipped rotation");
+             
+             
+             
+             
          }
          if(isEquipped || equipping)
          {
              RotateTowardCursor(horizontal, vertical);
 
+             
+            
             if(horizontal!= 0f || vertical!=0f)
             {
                 Vector3 targetDirection = new Vector3(horizontal, 0, vertical);
                 targetDirection = Camera.main.transform.TransformDirection(targetDirection);
                 
                 targetDirection.y = 0.0f;
-                rb.AddForce(targetDirection*speed);
+                rb.AddForce(targetDirection.normalized*speed);
+                
+                
             }
              
          }
@@ -115,12 +139,16 @@ public class TopDownMovment : MonoBehaviour
             }
     }
     
-    
+    private Vector3 targetDirection;
     void ProcessInput()
     {
         if(_input.RKey)
         {
             Equip();
+        }
+        if(_input.doubleTapW || _input.doubleTapA || _input.doubleTapS || _input.doubleTapD)
+        {
+            Dash();
         }
     }
     
@@ -152,6 +180,39 @@ public class TopDownMovment : MonoBehaviour
             }
         }
         
+    }
+    void Dash()
+    {
+        if(isEquipped)
+        {
+            if(_input.doubleTapW)
+            {
+                targetDirection = new Vector3(0, 0, 1);
+                
+            }
+            if(_input.doubleTapA)
+            {
+                targetDirection = new Vector3(-1, 0, 0);
+                
+            }
+            if(_input.doubleTapS)
+            {
+                targetDirection = new Vector3(0, 0, -1);
+                
+            }
+            if(_input.doubleTapD)
+            {
+                targetDirection = new Vector3(1, 0, 0);
+                
+            }
+            Debug.Log("dash");
+            _input.ResetDoubleTaps();
+            
+            targetDirection = Camera.main.transform.TransformDirection(targetDirection);
+            targetDirection.y = 0.0f;
+            Debug.Log(targetDirection*dashImpulse);
+            rb.AddForce(targetDirection*dashImpulse, ForceMode.Impulse);
+        }
     }
     void Equip()
     {

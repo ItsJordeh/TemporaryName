@@ -47,7 +47,6 @@ public class WeaponHandler : MonoBehaviour
             }
             if(_input.LMB && (Time.time > lastComboTime + mousecd || lastComboTime ==0) && comboCount < maxCombo && !blocking)
             {
-                Debug.Log("AAddToCombo");
                 
                     currentInCombo++;
                     int attackType = 1;
